@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   http: ^1.2.0          # For API calls
   provider: ^6.1.2      # For state management
-
+  visibility_detector: ^0.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -13,16 +13,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => UserProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
       child: MaterialApp(
-        title: 'Flutter Intern Assessment',
-        theme: ThemeData(
-          primarySwatch: Colors.grey,
-          scaffoldBackgroundColor: Colors.grey[100],
-        ),
-        debugShowCheckedModeBanner: false,
+        title: 'Flutter Assessment',
+        theme: ThemeData(primarySwatch: Colors.blue),
         home: const UserListScreen(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

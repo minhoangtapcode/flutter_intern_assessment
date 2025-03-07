@@ -4,40 +4,40 @@ import '../models/user.dart';
 import '../services/api_service.dart';
 
 class UserProvider with ChangeNotifier {
-  final List<User> _users = [];
+  List<User> _users = [];
   bool _isLoading = false;
+  bool _hasError = false;
+  int _currentPage = 1;
   bool _hasMore = true;
-  int _page = 1;
-  final ApiService _apiService;
-  static const int _maxUsers = 10; // Maximum number of users from JSONPlaceholder
 
   List<User> get users => _users;
   bool get isLoading => _isLoading;
+  bool get hasError => _hasError;
   bool get hasMore => _hasMore;
 
-  UserProvider({ApiService? apiService})
-      : _apiService = apiService ?? ApiService();
+  final ApiService _apiService = ApiService();
 
   Future<void> fetchUsers() async {
-    if (_isLoading || !_hasMore) return;
+    if (!_hasMore || _isLoading) return;
 
     _isLoading = true;
     notifyListeners();
 
     try {
-      //Keep fetching until we have at least _minUsersToDisplay or no more users are available
-      final newUsers = await _apiService.fetchUsers(_page);
-      _users.addAll(newUsers); // Add users first
-      if (newUsers.isEmpty || _users.length >= _maxUsers) {
-        _hasMore = false; // Disable when no more users or max reached
+      print('Fetching more users, page: $_currentPage');
+      final newUsers = await _apiService.fetchUsers(_currentPage);
+      if (newUsers.isEmpty) {
+        _hasMore = false;
       } else {
-        _page++; //move to next page
+        _users.addAll(newUsers);
+        _currentPage++;
       }
+      _hasError = false;
     } catch (e) {
-      debugPrint('Error fetching users: $e');
+      _hasError = true;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 }

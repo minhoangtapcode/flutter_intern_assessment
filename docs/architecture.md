@@ -16,7 +16,7 @@ The app uses the `Provider` package for state management, implemented with `Chan
 - **Bloc**: Offers more structure but adds complexity with streams and events, which is overkill for this app’s simple state needs.
 - **Riverpod**: A modern evolution of `Provider`, but `Provider` was chosen for its familiarity and sufficient functionality for this project.
 
-## Testing Strategy(Didn't learning this before so get help by AI)
+## Testing Strategy(Didn't learn this before so get help by AI)
 The app employs a robust testing strategy to ensure reliability and correctness across data, logic, and UI layers.
 
 ### Unit Tests
