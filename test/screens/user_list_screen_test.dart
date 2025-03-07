@@ -32,7 +32,8 @@ void main() {
   }
 
   group('UserListScreen', () {
-    testWidgets('should display at least 6 users initially on phone layout', (WidgetTester tester) async {
+    testWidgets('should display at least 6 users initially on phone layout',
+        (WidgetTester tester) async {
       // Arrange: Mock the API to return 6 users
       final users = List.generate(
         6,
@@ -59,7 +60,9 @@ void main() {
       expect(find.text('User 5'), findsOneWidget);
     });
 
-    testWidgets('should display Load More button and fetch more users when pressed on phone layout', (WidgetTester tester) async {
+    testWidgets(
+        'should display Load More button and fetch more users when pressed on phone layout',
+        (WidgetTester tester) async {
       // Arrange: Mock the API to return users in two batches
       final firstPage = List.generate(
         6,
@@ -106,7 +109,9 @@ void main() {
       expect(find.text('No more users'), findsOneWidget);
     });
 
-    testWidgets('should show loading indicator while fetching users on phone layout', (WidgetTester tester) async {
+    testWidgets(
+        'should show loading indicator while fetching users on phone layout',
+        (WidgetTester tester) async {
       // Arrange: Mock the API to return users after a delay
       when(mockApiService.fetchUsers(1, perPage: 6)).thenAnswer((_) async {
         await Future.delayed(Duration(milliseconds: 500));
@@ -137,7 +142,9 @@ void main() {
       expect(find.byType(ListTile), findsOneWidget);
     });
 
-    testWidgets('should display user details on tablet layout when a user is selected', (WidgetTester tester) async {
+    testWidgets(
+        'should display user details on tablet layout when a user is selected',
+        (WidgetTester tester) async {
       // Arrange: Mock the API to return 6 users
       final users = List.generate(
         6,
@@ -166,8 +173,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert: Check that the user details are displayed
-      expect(find.text('User 0'), findsNWidgets(2)); // Once in list, once in details
-      expect(find.text('user0'), findsNWidgets(2)); // Once in list, once in details
+      expect(find.text('User 0'),
+          findsNWidgets(2)); // Once in list, once in details
+      expect(find.text('user0'),
+          findsNWidgets(2)); // Once in list, once in details
       expect(find.text('user0@example.com'), findsOneWidget);
     });
   });

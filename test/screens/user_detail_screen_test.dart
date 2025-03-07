@@ -14,7 +14,9 @@ void main() {
   );
 
   group('UserDetailScreen', () {
-    testWidgets('should display user details correctly in standalone mode (phone)', (WidgetTester tester) async {
+    testWidgets(
+        'should display user details correctly in standalone mode (phone)',
+        (WidgetTester tester) async {
       // Act: Render the widget in standalone mode (isEmbedded: false)
       await tester.pumpWidget(
         MaterialApp(
@@ -40,7 +42,9 @@ void main() {
       expect(find.byType(CircleAvatar), findsOneWidget);
     });
 
-    testWidgets('should display user details correctly in embedded mode (tablet)', (WidgetTester tester) async {
+    testWidgets(
+        'should display user details correctly in embedded mode (tablet)',
+        (WidgetTester tester) async {
       // Act: Render the widget in embedded mode (isEmbedded: true)
       await tester.pumpWidget(
         MaterialApp(
@@ -50,7 +54,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert: Check that user details are displayed without a Scaffold/AppBar
-      expect(find.text('User Details'), findsNothing); // No AppBar in embedded mode
+      expect(find.text('User Details'),
+          findsNothing); // No AppBar in embedded mode
       expect(find.text('ID:'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
       expect(find.text('Name:'), findsOneWidget);

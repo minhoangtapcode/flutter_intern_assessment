@@ -25,7 +25,7 @@ class _UserListScreenState extends State<UserListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text('Users'),
         backgroundColor: Colors.grey[500],
@@ -57,8 +57,13 @@ class _UserListScreenState extends State<UserListScreen> {
                           Expanded(
                             child: SingleChildScrollView(
                               child: _selectedUser != null
-                                  ? UserDetailScreen(user: _selectedUser!, isEmbedded: true)
-                                  : Center(child: Text('Select a user to see details', style: TextStyle(color: Colors.grey[600]))),
+                                  ? UserDetailScreen(
+                                      user: _selectedUser!, isEmbedded: true)
+                                  : Center(
+                                      child: Text(
+                                          'Select a user to see details',
+                                          style: TextStyle(
+                                              color: Colors.grey[600]))),
                             ),
                           ),
                         ],
@@ -126,7 +131,8 @@ class _UserListScreenState extends State<UserListScreen> {
               if (MediaQuery.of(context).size.width <= 600) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UserDetailScreen(user: user)),
+                  MaterialPageRoute(
+                      builder: (context) => UserDetailScreen(user: user)),
                 );
               } else {
                 setState(() {
@@ -145,9 +151,8 @@ class _UserListScreenState extends State<UserListScreen> {
       padding: const EdgeInsets.all(16.0),
       child: provider.hasMore
           ? ElevatedButton(
-              onPressed: provider.isLoading
-                  ? null
-                  : () => provider.fetchUsers(),
+              onPressed:
+                  provider.isLoading ? null : () => provider.fetchUsers(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[500],
                 foregroundColor: Colors.white,
