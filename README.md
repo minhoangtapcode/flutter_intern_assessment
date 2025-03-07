@@ -1,4 +1,4 @@
-# Flutter User List App
+# Flutter Intern Assessment 
 
 A Flutter application that fetches a list of users from a public API, displays them in a list, and provides detailed views for each user. The app supports both phone and tablet layouts.
 
