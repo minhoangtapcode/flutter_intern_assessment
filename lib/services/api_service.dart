@@ -2,6 +2,7 @@
 import 'package:flutter_intern_assessment/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+// ignore: depend_on_referenced_packages
 import 'package:mockito/annotations.dart'; 
 
 @GenerateMocks([ApiService])
