@@ -9,8 +9,7 @@ class UserProvider with ChangeNotifier {
   bool _hasMore = true;
   int _page = 1;
   final ApiService _apiService;
-  static const int _maxUsers =
-      10; // Maximum number of users from JSONPlaceholder
+  static const int _maxUsers = 10; // Maximum number of users from JSONPlaceholder
 
   List<User> get users => _users;
   bool get isLoading => _isLoading;

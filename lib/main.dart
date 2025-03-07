@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.grey,
           scaffoldBackgroundColor: Colors.grey[100],
         ),
+        debugShowCheckedModeBanner: false,
         home: const UserListScreen(),
       ),
     );
