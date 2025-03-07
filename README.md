@@ -36,11 +36,11 @@ A Flutter application that fetches a list of users from a public API, displays t
     'flutter test'
 
 6. **Public APIs Used**
-    The app fetches data from the following public APIs:
-    JSONPlaceholder API:
-        Base URL: https://jsonplaceholder.typicode.com
-        Endpoint: /users?_page=<page>&_limit=<limit>
-        Documentation: JSONPlaceholder
-    Picsum Photos:
-        URL: https://picsum.photos/50
-        Documentation: Picsum Photos
+    - The app fetches data from the following public APIs:
+        - JSONPlaceholder API:
+            + Base URL: https://jsonplaceholder.typicode.com
+            + Endpoint: /users?_page=<page>&_limit=<limit>
+            + Documentation: JSONPlaceholder
+        - Picsum Photos:
+            + URL: https://picsum.photos/50
+            + Documentation: Picsum Photos
