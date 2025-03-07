@@ -1,0 +1,24 @@
+name: flutter_intern_assessment
+description: A simple Flutter app for intern assessment.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0          # For API calls
+  provider: ^6.1.2      # For state management
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test: any
+  mockito: ^5.4.4       # For mocking in tests
+  build_runner: ^2.4.8  # For generating mocks
+  flutter_lints: ^3.0.0 # For linting rules
+
+flutter:
+  uses-material-design: true
