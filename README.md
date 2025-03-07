@@ -1,4 +1,4 @@
-# Flutter User List App
+# Flutter Intern Assessment 
 
 A Flutter application that fetches a list of users from a public API, displays them in a list, and provides detailed views for each user. The app supports both phone and tablet layouts.
 
@@ -37,10 +37,10 @@ A Flutter application that fetches a list of users from a public API, displays t
 
 6. **Public APIs Used**
     The app fetches data from the following public APIs:
-    -JSONPlaceholder API:
-        -Base URL: https://jsonplaceholder.typicode.com
-        -Endpoint: /users?_page=<page>&_limit=<limit>
-        -Documentation: JSONPlaceholder
-    -Picsum Photos:
-        -URL: https://picsum.photos/50
-        -Documentation: Picsum Photos
+    JSONPlaceholder API:
+        Base URL: https://jsonplaceholder.typicode.com
+        Endpoint: /users?_page=<page>&_limit=<limit>
+        Documentation: JSONPlaceholder
+    Picsum Photos:
+        URL: https://picsum.photos/50
+        Documentation: Picsum Photos
