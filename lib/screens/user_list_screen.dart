@@ -17,6 +17,7 @@ class UserListScreen extends StatefulWidget {
 class _UserListScreenState extends State<UserListScreen> {
   final ScrollController _scrollController = ScrollController();
   int? _selectedUserIndex;
+  DateTime _lastFetchTime = DateTime.now(); // For debouncing pagination
 
   @override
   void initState() {
@@ -43,16 +44,19 @@ class _UserListScreenState extends State<UserListScreen> {
     }
   }
 
-  /// Generates an avatar URL based on the user's name.
-  String _getAvatarUrl(String name) {
-    return 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}&size=128';
+  /// Generates an avatar URL using Lorem Picsum with the user's ID.
+  String _getAvatarUrl(int userId) {
+    return 'https://picsum.photos/id/$userId/200/200'; // Random image based on user ID
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool isTablet = constraints.maxWidth > 600;
+        // Check orientation and width for responsive design
+        final bool isPortrait =
+            MediaQuery.of(context).orientation == Orientation.portrait;
+        final bool isTablet = constraints.maxWidth > 600 && !isPortrait;
 
         return Scaffold(
           appBar: AppBar(title: const Text('Users')),
@@ -144,12 +148,16 @@ class _UserListScreenState extends State<UserListScreen> {
       itemBuilder: (context, index) {
         if (index == userProvider.users.length) {
           return VisibilityDetector(
-            key: const Key('load-more-indicator'),
+            key: ValueKey('load-more-indicator-${userProvider.users.length}'),
             onVisibilityChanged: (visibilityInfo) {
+              // Debounce the fetch to prevent multiple triggers
+              final now = DateTime.now();
               if (visibilityInfo.visibleFraction > 0 &&
                   userProvider.hasMore &&
-                  !userProvider.isLoading) {
+                  !userProvider.isLoading &&
+                  now.difference(_lastFetchTime).inMilliseconds > 500) {
                 print('Loading more users...');
+                _lastFetchTime = now;
                 userProvider.fetchUsers();
               }
             },
@@ -170,11 +178,34 @@ class _UserListScreenState extends State<UserListScreen> {
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(_getAvatarUrl(user.name)),
+        backgroundImage: NetworkImage(_getAvatarUrl(user.id)),
         radius: 24,
       ),
       title: Text(user.name),
-      subtitle: Text(user.username),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(user.username),
+          const SizedBox(height: 4),
+          Text(
+            user.email,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${user.address.street}, ${user.address.suite}, ${user.address.city}, ${user.address.zipcode}',
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ],
+      ),
       selected: isSelected,
       selectedTileColor: Colors.blue.withOpacity(0.3),
       onTap: () {
@@ -229,7 +260,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                     ),
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(_getAvatarUrl(user.name)),
+                      backgroundImage: NetworkImage(_getAvatarUrl(user.id)),
                       radius: 60,
                     ),
                   ),
@@ -284,6 +315,36 @@ class _UserListScreenState extends State<UserListScreen> {
                           const SizedBox(height: 4),
                           Text(
                             user.email,
+                            style: const TextStyle(
+                                fontSize: 18, color: Colors.black87),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                // Address with icon
+                Row(
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.blueGrey, size: 28),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Address',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${user.address.street}, ${user.address.suite}, ${user.address.city}, ${user.address.zipcode}',
                             style: const TextStyle(
                                 fontSize: 18, color: Colors.black87),
                           ),

@@ -15,6 +15,13 @@ class MockApiService extends Mock implements ApiService {
         name: 'Test User $index',
         username: 'user$index',
         email: 'user$index@example.com',
+        address: Address(
+          street: 'Street $index',
+          suite: 'Suite $index',
+          city: 'City $index',
+          zipcode: 'Zipcode $index',
+          geo: Geo(lat: '0', lng: '0'),
+        ),
       );
     });
   }
