@@ -7,7 +7,8 @@ import 'package:flutter_intern_assessment/providers/user_provider.dart';
 import 'mocks/mock_api_service.dart';
 
 void main() {
-  testWidgets('UserListScreen shows loading indicator initially', (WidgetTester tester) async {
+  testWidgets('UserListScreen shows loading indicator initially',
+      (WidgetTester tester) async {
     // Create a mock ApiService
     final mockApiService = MockApiService();
 
@@ -16,7 +17,8 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<UserProvider>(
-            create: (_) => UserProvider(apiService: mockApiService)..fetchUsers(), // Inject mock
+            create: (_) => UserProvider(apiService: mockApiService)
+              ..fetchUsers(), // Inject mock
           ),
         ],
         child: const MaterialApp(home: UserListScreen()),
