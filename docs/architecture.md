@@ -9,12 +9,8 @@ The app uses the `Provider` package for state management, implemented with `Chan
 - **Community Support**: `Provider` is widely adopted in the Flutter community and recommended by the Flutter team, ensuring long-term support and compatibility.
 
 ### Implementation
-- **UserProvider**: A `ChangeNotifier` class that manages the list of users (`_users`), loading state (`_isLoading`), and pagination (`_hasMore` and `_page`). It fetches users from the `ApiService` and notifies listeners to update the UI.
-- **Usage**: The `UserProvider` is provided at the app’s root using `ChangeNotifierProvider` in `main.dart`, and `UserListScreen` consumes it with `Consumer<UserProvider>` to react to state changes.
-
-### Alternatives Considered(I don't learn about this yet)
-- **Bloc**: Offers more structure but adds complexity with streams and events, which is overkill for this app’s simple state needs.
-- **Riverpod**: A modern evolution of `Provider`, but `Provider` was chosen for its familiarity and sufficient functionality for this project.
+- **UserProvider**: A `ChangeNotifier` class that manages the app’s state, including the list of users `(_users)`, loading state `(_isLoading)`, error state `(_hasError)`, pagination `(_currentPage)`, and whether more users can be fetched `(_hasMore)`. It uses the `ApiService` to fetch users from JSONPlaceholder and notifies listeners to update the UI when the state changes.
+- **Usage**: The `UserProvider` is provided at the app’s root using `ChangeNotifierProvider` in `main.dart`, and `UserListScreen` consumes it with `Consumer<UserProvider>` to rebuild the UI when the user list or loading state updates.
 
 ## Testing Strategy(Didn't learn this before so get help by AI)
 The app employs a robust testing strategy to ensure reliability and correctness across data, logic, and UI layers.
@@ -26,7 +22,7 @@ The app employs a robust testing strategy to ensure reliability and correctness 
   - `test/providers/user_provider_test.dart`: Tests the `UserProvider`’s `fetchUsers` method, verifying user fetching, loading states, and pagination logic (`hasMore`).
 - **Tools**: Uses `flutter_test` and `mockito` to mock `ApiService` for isolated testing.
 
-### Widget Tests
+### Widget Tests(Test stuck at fetching more user)
 - **Purpose**: Verify the UI behavior of the app’s main screens across different scenarios.
 - **Files**:
   - `test/user_list_screen_test.dart`: Tests `UserListScreen` for loading states, user list display, "Load More" functionality, navigation, tablet layout, and empty state handling.
