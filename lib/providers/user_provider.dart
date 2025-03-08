@@ -1,4 +1,3 @@
-// lib/providers/user_provider.dart
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/api_service.dart';
@@ -10,12 +9,15 @@ class UserProvider with ChangeNotifier {
   int _currentPage = 1;
   bool _hasMore = true;
 
+  final ApiService _apiService;
+
   List<User> get users => _users;
   bool get isLoading => _isLoading;
   bool get hasError => _hasError;
   bool get hasMore => _hasMore;
 
-  final ApiService _apiService = ApiService();
+  UserProvider({ApiService? apiService})
+      : _apiService = apiService ?? ApiService();
 
   Future<void> fetchUsers() async {
     if (!_hasMore || _isLoading) return;
@@ -39,5 +41,14 @@ class UserProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void reset() {
+    _users.clear();
+    _currentPage = 1;
+    _hasMore = true;
+    _hasError = false;
+    _isLoading = false;
+    notifyListeners();
   }
 }
