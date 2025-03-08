@@ -25,7 +25,7 @@ A Flutter application that fetches a list of users from a public API, displays t
     Connect a device (emulator or physical) or start an emulator (e.g., flutter emulators --launch ):
     ```bash
     'flutter run'
-    The app will fetch users from the JSONPlaceholder API and display them in a list. Tap a user to view details, and use the "Load More" button to fetch additional users.
+    The app will fetch users from the JSONPlaceholder API and display them in a list. Tap a user to view details, and scroll to fetch additional users.
 
 4. **Running test**
     ```bash
