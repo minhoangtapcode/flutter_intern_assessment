@@ -31,9 +31,7 @@ The app employs a robust testing strategy to ensure reliability and correctness 
 
 ### Challenges and Solutions
 - About the flutter test, i need help from the AI because I don't study about it, will learn in the future
-- **Network Mocking**: Mocking `HttpClient` was challenging due to type mismatches (`Null` vs. `Future<HttpClientRequest>`). This was resolved by using specific `Uri` mocks and a default fallback for unhandled `Uri`s, combined with global `HttpOverrides`.
-- **Mock Generation**: `mockito` required `build_runner` to generate mocks (e.g., `MockApiService`), ensuring proper testing of dependencies.
-
+- The test failed after fetching, some fix keep the test failed at network image
 ### Future Improvements
 - Get knowledge about Flutter Test
 - **Code Coverage**: Use `flutter test --coverage` to measure and improve test coverage.
