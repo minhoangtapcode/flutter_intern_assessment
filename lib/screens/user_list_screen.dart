@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/user.dart';
-import '../providers/user_provider.dart' as provider; // Use alias for UserProvider
-import '../screens/user_detail_screen.dart'; 
-
+import '../providers/user_provider.dart';
+import '../screens/user_detail_screen.dart';
 
 class UserListScreen extends StatefulWidget {
-  final bool showAppBar;
+  final bool showAppBar; // New parameter to control AppBar visibility
 
   const UserListScreen({super.key, this.showAppBar = true});
 
@@ -17,6 +16,7 @@ class UserListScreen extends StatefulWidget {
 class _UserListScreenState extends State<UserListScreen> {
   final ScrollController _scrollController = ScrollController();
   int? _selectedUserIndex;
+  DateTime _lastFetchTime = DateTime.now();
   bool _hasScrolled = false;
   bool _isFetchingMore = false;
 
@@ -24,10 +24,7 @@ class _UserListScreenState extends State<UserListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userProvider = context.read<provider.UserProvider>();
-      if (userProvider.users.isEmpty) {
-        userProvider.fetchUsers();
-      }
+      context.read<UserProvider>().fetchUsers();
     });
     _scrollController.addListener(_onScroll);
   }
@@ -47,16 +44,13 @@ class _UserListScreenState extends State<UserListScreen> {
 
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 100) {
-      final userProvider = context.read<provider.UserProvider>();
-      if (userProvider.users.isNotEmpty &&
-          userProvider.hasMore &&
-          !userProvider.isLoading &&
-          !_isFetchingMore) {
-        print(
-            'Fetching more users via scroll, page: ${userProvider.currentPage + 1}...');
+      final userProvider = context.read<UserProvider>();
+      if (userProvider.users.isNotEmpty && userProvider.hasMore && !userProvider.isLoading && !_isFetchingMore) {
+        print('Fetching more users via scroll...');
         setState(() {
           _isFetchingMore = true;
         });
+        _lastFetchTime = DateTime.now();
         userProvider.fetchUsers().then((_) {
           if (mounted) {
             setState(() {
@@ -76,34 +70,30 @@ class _UserListScreenState extends State<UserListScreen> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool isPortrait =
-            MediaQuery.of(context).orientation == Orientation.portrait;
+        final bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
         final bool isTablet = constraints.maxWidth > 600 && !isPortrait;
 
         return Scaffold(
-          appBar: widget.showAppBar ? AppBar(title: const Text('Users')) : null,
-          body: Consumer<provider.UserProvider>(
-            builder: (context, userProvider, _) =>
-                _buildBody(userProvider, isTablet),
+          appBar: widget.showAppBar ? AppBar(title: const Text('Users')) : null, // Conditionally show AppBar
+          body: Consumer<UserProvider>(
+            builder: (context, userProvider, _) => _buildBody(userProvider, isTablet),
           ),
         );
       },
     );
   }
 
-  Widget _buildBody(provider.UserProvider userProvider, bool isTablet) {
+  Widget _buildBody(UserProvider userProvider, bool isTablet) {
     if (userProvider.isLoading && userProvider.users.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
     if (userProvider.hasError) {
       return const Center(child: Text('Error loading users'));
     }
-    return isTablet
-        ? _buildTabletLayout(userProvider)
-        : _buildPhoneLayout(userProvider);
+    return isTablet ? _buildTabletLayout(userProvider) : _buildPhoneLayout(userProvider);
   }
 
-  Widget _buildTabletLayout(provider.UserProvider userProvider) {
+  Widget _buildTabletLayout(UserProvider userProvider) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -128,7 +118,7 @@ class _UserListScreenState extends State<UserListScreen> {
     );
   }
 
-  Widget _buildPhoneLayout(provider.UserProvider userProvider) {
+  Widget _buildPhoneLayout(UserProvider userProvider) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is ScrollEndNotification) {
@@ -142,17 +132,11 @@ class _UserListScreenState extends State<UserListScreen> {
             controller: _scrollController,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
-              childAspectRatio: 1.5,
+              childAspectRatio: 2,
             ),
-            itemCount: userProvider.users.length +
-                (_hasScrolled && _isFetchingMore && userProvider.hasMore
-                    ? 1
-                    : 0),
+            itemCount: userProvider.users.length + (_hasScrolled && _isFetchingMore && userProvider.hasMore ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == userProvider.users.length &&
-                  _hasScrolled &&
-                  _isFetchingMore &&
-                  userProvider.hasMore) {
+              if (index == userProvider.users.length && _hasScrolled && _isFetchingMore && userProvider.hasMore) {
                 return const Center(child: CircularProgressIndicator());
               }
               final user = userProvider.users[index];
@@ -164,8 +148,7 @@ class _UserListScreenState extends State<UserListScreen> {
     );
   }
 
-  Widget _buildUserList(provider.UserProvider userProvider,
-      {required bool isTablet}) {
+  Widget _buildUserList(UserProvider userProvider, {required bool isTablet}) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is ScrollEndNotification) {
@@ -175,13 +158,9 @@ class _UserListScreenState extends State<UserListScreen> {
       },
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: userProvider.users.length +
-            (_hasScrolled && _isFetchingMore && userProvider.hasMore ? 1 : 0),
+        itemCount: userProvider.users.length + (_hasScrolled && _isFetchingMore && userProvider.hasMore ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index == userProvider.users.length &&
-              _hasScrolled &&
-              _isFetchingMore &&
-              userProvider.hasMore) {
+          if (index == userProvider.users.length && _hasScrolled && _isFetchingMore && userProvider.hasMore) {
             return const Center(child: CircularProgressIndicator());
           }
           final user = userProvider.users[index];
@@ -206,8 +185,7 @@ class _UserListScreenState extends State<UserListScreen> {
         children: [
           Text(user.username),
           const SizedBox(height: 4),
-          Text(user.email,
-              style: const TextStyle(fontSize: 14, color: Colors.grey)),
+          Text(user.email, style: const TextStyle(fontSize: 14, color: Colors.grey)),
           const SizedBox(height: 4),
           Text(
             '${user.address.street}, ${user.address.suite}, ${user.address.city}, ${user.address.zipcode}',
@@ -223,10 +201,7 @@ class _UserListScreenState extends State<UserListScreen> {
         if (isTablet) {
           setState(() => _selectedUserIndex = index);
         } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => UserDetailScreen(user: user)),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (_) => UserDetailScreen(user: user)));
         }
       },
     );
@@ -238,100 +213,33 @@ class _UserListScreenState extends State<UserListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: Card(
           elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                    child: Text(user.name,
-                        style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey))),
+                Center(child: Text(user.name, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blueGrey))),
                 const SizedBox(height: 20),
                 Center(
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                          color: Colors.blueGrey.withOpacity(0.3), width: 3),
+                      border: Border.all(color: Colors.blueGrey.withOpacity(0.3), width: 3),
                     ),
-                    child: CircleAvatar(
-                        backgroundImage: NetworkImage(_getAvatarUrl(user.id)),
-                        radius: 60),
+                    child: CircleAvatar(backgroundImage: NetworkImage(_getAvatarUrl(user.id)), radius: 60),
                   ),
                 ),
                 const SizedBox(height: 30),
-                Row(children: [
-                  const Icon(Icons.person, color: Colors.blueGrey, size: 28),
-                  const SizedBox(width: 10),
-                  Expanded(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                        const Text('Username',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey)),
-                        const SizedBox(height: 4),
-                        Text(user.username,
-                            style: const TextStyle(
-                                fontSize: 18, color: Colors.black87))
-                      ]))
-                ]),
+                Row(children: [const Icon(Icons.person, color: Colors.blueGrey, size: 28), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('Username', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)), const SizedBox(height: 4), Text(user.username, style: const TextStyle(fontSize: 18, color: Colors.black87))]))]),
                 const SizedBox(height: 20),
-                Row(children: [
-                  const Icon(Icons.email, color: Colors.blueGrey, size: 28),
-                  const SizedBox(width: 10),
-                  Expanded(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                        const Text('Email',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey)),
-                        const SizedBox(height: 4),
-                        Text(user.email,
-                            style: const TextStyle(
-                                fontSize: 18, color: Colors.black87))
-                      ]))
-                ]),
+                Row(children: [const Icon(Icons.email, color: Colors.blueGrey, size: 28), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('Email', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)), const SizedBox(height: 4), Text(user.email, style: const TextStyle(fontSize: 18, color: Colors.black87))]))]),
                 const SizedBox(height: 20),
-                Row(children: [
-                  const Icon(Icons.location_on,
-                      color: Colors.blueGrey, size: 28),
-                  const SizedBox(width: 10),
-                  Expanded(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                        const Text('Address',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey)),
-                        const SizedBox(height: 4),
-                        Text(
-                            '${user.address.street}, ${user.address.suite}, ${user.address.city}, ${user.address.zipcode}',
-                            style: const TextStyle(
-                                fontSize: 18, color: Colors.black87))
-                      ]))
-                ]),
+                Row(children: [const Icon(Icons.location_on, color: Colors.blueGrey, size: 28), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('Address', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)), const SizedBox(height: 4), Text('${user.address.street}, ${user.address.suite}, ${user.address.city}, ${user.address.zipcode}', style: const TextStyle(fontSize: 18, color: Colors.black87))]))]),
                 const SizedBox(height: 20),
                 Divider(color: Colors.grey.withOpacity(0.3), thickness: 1),
                 const SizedBox(height: 10),
-                const Center(
-                    child: Text('More details coming soon...',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic))),
+                const Center(child: Text('More details coming soon...', style: TextStyle(fontSize: 16, color: Colors.grey, fontStyle: FontStyle.italic))),
               ],
             ),
           ),
